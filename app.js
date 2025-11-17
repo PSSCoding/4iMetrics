@@ -1,7 +1,43 @@
 // Demo Reporting Dashboard UI with static KPI data for three dummy apps.
 // Built with React + Recharts via CDN, designed to run on GitHub Pages without any build step.
 
-const { useState, useMemo } = React;
+function renderFatalError(message) {
+  if (window.__dashboardFatalShown) return;
+  window.__dashboardFatalShown = true;
+  const root = document.getElementById("root");
+  if (root) {
+    root.style.padding = "24px";
+    root.style.fontFamily = "Arial, sans-serif";
+    root.textContent = message;
+  }
+  console.error(message);
+}
+
+window.addEventListener("error", (event) => {
+  if (!event.message) return;
+  renderFatalError(`Runtime error: ${event.message}`);
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+  const reason = event.reason;
+  const message = reason && reason.message ? reason.message : String(reason || "Unknown error");
+  renderFatalError(`Runtime error: ${message}`);
+});
+
+function guardGlobal(name, ref) {
+  if (!ref) {
+    const message = `${name} failed to load. Check CDN access or script order.`;
+    renderFatalError(message);
+    throw new Error(message);
+  }
+  return ref;
+}
+
+const ReactGlobal = guardGlobal("React", window.React);
+const ReactDOMGlobal = guardGlobal("ReactDOM", window.ReactDOM);
+const RechartsGlobal = guardGlobal("Recharts", window.Recharts);
+
+const { useState, useMemo } = ReactGlobal;
 const {
   LineChart,
   Line,
@@ -18,9 +54,9 @@ const {
   Cell,
   AreaChart,
   Area,
-} = Recharts;
+} = RechartsGlobal;
 
-const e = React.createElement;
+const e = ReactGlobal.createElement;
 
 const APPS = [
   {
@@ -1021,5 +1057,5 @@ function ChangeDynamicsSection({ dailyMetrics, latestDay }) {
 }
 
 const rootElement = document.getElementById("root");
-const root = ReactDOM.createRoot(rootElement);
-root.render(React.createElement(App));
+const root = ReactDOMGlobal.createRoot(rootElement);
+root.render(ReactGlobal.createElement(App));
