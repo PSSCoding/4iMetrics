@@ -1,25 +1,7 @@
 // Demo Reporting Dashboard UI with static KPI data for three dummy apps.
 // Built with React + Recharts via CDN, designed to run on GitHub Pages without any build step.
 
-function guardGlobal(name, ref) {
-  if (!ref) {
-    const message = `${name} failed to load. Check CDN access or script order.`;
-    const root = document.getElementById("root");
-    if (root) {
-      root.style.padding = "24px";
-      root.style.fontFamily = "Arial, sans-serif";
-      root.textContent = message;
-    }
-    throw new Error(message);
-  }
-  return ref;
-}
-
-const ReactGlobal = guardGlobal("React", window.React);
-const ReactDOMGlobal = guardGlobal("ReactDOM", window.ReactDOM);
-const RechartsGlobal = guardGlobal("Recharts", window.Recharts);
-
-const { useState, useMemo } = ReactGlobal;
+const { useState, useMemo } = React;
 const {
   LineChart,
   Line,
@@ -36,9 +18,9 @@ const {
   Cell,
   AreaChart,
   Area,
-} = RechartsGlobal;
+} = Recharts;
 
-const e = ReactGlobal.createElement;
+const e = React.createElement;
 
 const APPS = [
   {
@@ -1039,5 +1021,5 @@ function ChangeDynamicsSection({ dailyMetrics, latestDay }) {
 }
 
 const rootElement = document.getElementById("root");
-const root = ReactDOMGlobal.createRoot(rootElement);
-root.render(ReactGlobal.createElement(App));
+const root = ReactDOM.createRoot(rootElement);
+root.render(React.createElement(App));
